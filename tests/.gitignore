@@ -1,0 +1,5 @@
+*.o
+*.riscv
+*.dump
+*.img
+libgloss/

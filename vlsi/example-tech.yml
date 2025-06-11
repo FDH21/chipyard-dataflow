@@ -1,0 +1,5 @@
+# Technology Setup
+vlsi.core.technology: "hammer.technology.<tech_name>"
+
+# technology files installation directory
+technology.<tech_name>.install_dir: "</path/to/technology/pdk/>"

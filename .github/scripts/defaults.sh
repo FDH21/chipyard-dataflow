@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# make parallelism
+CI_MAKE_NPROC=8
+# chosen based on a 24c system shared with 1 other project
+REMOTE_MAKE_NPROC=4
+
+# remote variables
+# CI_DIR is defined externally based on the GH repository secret BUILDDIR
+
+REMOTE_PREFIX=$CI_DIR/${GITHUB_REPOSITORY#*/}-${GITHUB_REF_NAME//\//-}
+REMOTE_WORK_DIR=$GITHUB_WORKSPACE
+REMOTE_CHIPYARD_DIR=$GITHUB_WORKSPACE
+REMOTE_SIM_DIR=$REMOTE_CHIPYARD_DIR/sims/verilator
+REMOTE_FIRESIM_DIR=$REMOTE_CHIPYARD_DIR/sims/firesim/sim
+REMOTE_FPGA_DIR=$REMOTE_CHIPYARD_DIR/fpga
+
+# local variables (aka within the docker container)
+LOCAL_CHIPYARD_DIR=$GITHUB_WORKSPACE
+LOCAL_SIM_DIR=$LOCAL_CHIPYARD_DIR/sims/verilator
+LOCAL_FIRESIM_DIR=$LOCAL_CHIPYARD_DIR/sims/firesim/sim
+
+# CI uses temp directories with very long names
+# explicitly force socket creation to use /tmp to avoid name length errors
+# https://github.com/sbt/sbt/pull/6887
+REMOTE_JAVA_TMP_DIR=$(mktemp -d -t ci-cy-XXXXXXXX)
+REMOTE_COURSIER_CACHE=$REMOTE_WORK_DIR/.coursier-cache
+
+# key value store to get the build groups
+declare -A grouping
+grouping["group-cores"]="chipyard-cva6 chipyard-ibex chipyard-rocket chipyard-hetero chipyard-boom chipyard-sodor chipyard-digitaltop chipyard-multiclock-rocket chipyard-nomem-scratchpad chipyard-spike chipyard-clone"
+grouping["group-peripherals"]="chipyard-dmirocket chipyard-spiflashwrite chipyard-mmios chipyard-nocores chipyard-manyperipherals"
+grouping["group-accels"]="chipyard-mempress chipyard-sha3 chipyard-hwacha chipyard-gemmini chipyard-manymmioaccels"
+grouping["group-constellation"]="chipyard-constellation"
+grouping["group-tracegen"]="tracegen tracegen-boom"
+grouping["group-other"]="icenet testchipip constellation"
+grouping["group-fpga"]="arty vcu118 vc707"
+
+# key value store to get the build strings
+declare -A mapping
+mapping["chipyard-rocket"]=""
+mapping["chipyard-dmirocket"]=" CONFIG=dmiRocketConfig"
+mapping["chipyard-sha3"]=" CONFIG=Sha3RocketConfig"
+mapping["chipyard-mempress"]=" CONFIG=MempressRocketConfig"
+mapping["chipyard-digitaltop"]=" TOP=DigitalTop"
+mapping["chipyard-manymmioaccels"]=" CONFIG=ManyMMIOAcceleratorRocketConfig"
+mapping["chipyard-hetero"]=" CONFIG=LargeBoomAndRocketConfig"
+mapping["chipyard-boom"]=" CONFIG=MediumBoomCosimConfig"
+mapping["chipyard-spike"]=" CONFIG=SpikeFastUARTConfig EXTRA_SIM_FLAGS='+spike-ipc=10'"
+mapping["chipyard-hwacha"]=" CONFIG=HwachaRocketConfig"
+mapping["chipyard-gemmini"]=" CONFIG=GemminiRocketConfig"
+mapping["chipyard-cva6"]=" CONFIG=CVA6Config"
+mapping["chipyard-ibex"]=" CONFIG=IbexConfig"
+mapping["chipyard-spiflashwrite"]=" CONFIG=SmallSPIFlashRocketConfig EXTRA_SIM_FLAGS='+spiflash0=${LOCAL_CHIPYARD_DIR}/tests/spiflash.img'"
+mapping["chipyard-manyperipherals"]=" CONFIG=ManyPeripheralsRocketConfig EXTRA_SIM_FLAGS='+spiflash0=${LOCAL_CHIPYARD_DIR}/tests/spiflash.img'"
+mapping["chipyard-cloneboom"]=" CONFIG=Cloned64MegaBoomConfig verilog"
+mapping["chipyard-nocores"]=" CONFIG=NoCoresConfig verilog"
+mapping["tracegen"]=" CONFIG=NonBlockingTraceGenL2Config"
+mapping["tracegen-boom"]=" CONFIG=BoomTraceGenConfig"
+mapping["chipyard-sodor"]=" CONFIG=Sodor5StageConfig"
+mapping["chipyard-multiclock-rocket"]=" CONFIG=MulticlockRocketConfig"
+mapping["chipyard-nomem-scratchpad"]=" CONFIG=MMIOScratchpadOnlyRocketConfig"
+mapping["chipyard-constellation"]=" CONFIG=SharedNoCConfig"
+
+mapping["constellation"]=" SUB_PROJECT=constellation"
+mapping["firesim"]="SCALA_TEST=firesim.firesim.RocketNICF1Tests"
+mapping["fireboom"]="SCALA_TEST=firesim.firesim.BoomF1Tests"
+mapping["icenet"]="SUB_PROJECT=icenet"
+mapping["testchipip"]="SUB_PROJECT=testchipip"
+
+mapping["arty"]="SUB_PROJECT=arty verilog"
+mapping["vcu118"]="SUB_PROJECT=vcu118 verilog"
+mapping["vc707"]="SUB_PROJECT=vc707 verilog"

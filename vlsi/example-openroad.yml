@@ -1,0 +1,10 @@
+# Tool options. Replace with your tool plugin of choice.
+vlsi.core.build_system: make
+# Yosys
+vlsi.core.synthesis_tool: "hammer.synthesis.yosys"
+# OpenROAD
+vlsi.core.par_tool: "hammer.par.openroad"
+# Magic
+vlsi.core.drc_tool: "hammer.drc.magic"
+# Netgen
+vlsi.core.lvs_tool: "hammer.lvs.netgen"
