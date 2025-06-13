@@ -133,6 +133,7 @@ cd "$RDIR"
     # Non-recursive clone to exclude gemmini-software
     git submodule update --init generators/gemmini
     git -C generators/gemmini/ submodule update --init --recursive software/gemmini-rocc-tests
+    git -C generators/gemmini/ submodule update --init --recursive src/main/scala/gemmini
 
     # Minimal non-recursive clone to initialize sbt dependencies
     git submodule update --init sims/firesim

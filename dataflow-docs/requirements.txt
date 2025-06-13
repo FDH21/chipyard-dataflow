@@ -1,0 +1,12 @@
+sphinx_rtd_theme
+recommonmark
+sphinx_markdown_tables
+sphinx
+sphinx-autobuild
+sphinx-book-theme == 1.0.1
+sphinx-copybutton == 0.5.2
+myst-parser == 2.0.0
+sphinx-argparse
+sphinxcontrib.redoc
+sphinxcontrib.openapi
+myst-parser == 2.0.0
