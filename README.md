@@ -1,4 +1,11 @@
-![CHIPYARD](https://github.com/ucb-bar/chipyard/raw/main/docs/_static/images/chipyard-logo-full.png)
+![CHIPYARD](./dataflow-docs/source/assets/logo/chipyard-dataflow.png)
+
+
+# Chipyard-dataflow
+
+Chipyard-dataflow is a secondary development based on the [Chipyard](https://chipyard.readthedocs.io/)  project, adding its many-core dataflow functionality. For details, please refer to the documentation at [Chipyard-dataflow Documentation](https://chipyard-dataflow.readthedocs.io/en/latest/). 
+
+# Below is the original Chipyard documentation
 
 # Chipyard Framework [![Test](https://github.com/ucb-bar/chipyard/actions/workflows/chipyard-run-tests.yml/badge.svg)](https://github.com/ucb-bar/chipyard/actions)
 
