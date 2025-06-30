@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "gemmini_nn.h": "c",
+        "rerocc.h": "c",
+        "gemmini.h": "c"
+    }
+}

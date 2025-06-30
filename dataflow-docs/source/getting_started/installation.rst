@@ -16,8 +16,13 @@
 .. code-block:: console
 
     git clone https://github.com/FDH21/chipyard-dataflow
+    conda install -n base python=3.10
+    conda install -n base conda-libmamba-solver
+    conda config --set solver libmamba
+    conda install -n base conda-lock==1.4.0
     conda activate base
     # skip firemarshal and firesim
+    git config --global credential.helper store
     ./build-setup.sh riscv-tools  -s 6 -s 7 -s 8 -s 9
 
 安装firemarshal（可略）
